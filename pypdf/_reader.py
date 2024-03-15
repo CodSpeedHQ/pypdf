@@ -30,9 +30,10 @@
 import os
 import re
 import struct
+import weakref
 import zlib
 from datetime import datetime
-from io import BytesIO, UnsupportedOperation
+from io import BytesIO, FileIO, UnsupportedOperation
 from pathlib import Path
 from typing import (
     Any,
@@ -310,9 +311,11 @@ class PdfReader:
                 "It may not be read correctly.",
                 __name__,
             )
+
         if isinstance(stream, (str, Path)):
-            with open(stream, "rb") as fh:
-                stream = BytesIO(fh.read())
+            stream = FileIO(stream, "rb")
+            weakref.finalize(self, stream.close)
+
         self.read(stream)
         self.stream = stream
 
@@ -341,6 +344,10 @@ class PdfReader:
             self._override_encryption = False
         elif password is not None:
             raise PdfReadError("Not encrypted file")
+
+    def close(self) -> None:
+        """Close the underlying file handle"""
+        self.stream.close()
 
     @property
     def root_object(self) -> DictionaryObject:

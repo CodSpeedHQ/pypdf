@@ -1211,6 +1211,8 @@ def test_set_page_label(pdf_file_path):
         ValueError, match="if given, start must be equal or greater than one"
     ):
         writer.set_page_label(0, 5, "/r", start=-1)
+    import gc
+    gc.collect()
 
     pdf_file_path.unlink()
 
@@ -1234,6 +1236,9 @@ def test_set_page_label(pdf_file_path):
     writer.set_page_label(0, 1, "/A")
     writer.write(pdf_file_path)
     assert PdfReader(pdf_file_path).page_labels[: len(expected)] == expected
+
+    import gc
+    gc.collect()
 
     pdf_file_path.unlink()
 
@@ -1498,6 +1503,7 @@ def test_update_form_fields(tmp_path):
     assert all(x in flds["CheckBox1"]["/_States_"] for x in ["/Off", "/Yes"])
     assert all(x in flds["RadioGroup1"]["/_States_"] for x in ["/1", "/2", "/3"])
     assert all(x in flds["Liste1"]["/_States_"] for x in ["Liste1", "Liste2", "Liste3"])
+    reader.close()
 
     Path(write_data_here).unlink()
 
