@@ -314,10 +314,10 @@ class PdfReader:
                 __name__,
             )
 
-        self._we_opened = False
+        self._opened_automatically = False
         if isinstance(stream, (str, Path)):
             stream = FileIO(stream, "rb")
-            self._we_opened = True
+            self._opened_automatically = True
             weakref.finalize(self, stream.close)
 
         self.read(stream)
@@ -363,8 +363,8 @@ class PdfReader:
         exc: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        """Write data to the fileobj."""
-        if self._we_opened:
+        """Close the underlying stream if owned by the PdfReader"""
+        if self._opened_automatically:
             self.close()
 
     @property
