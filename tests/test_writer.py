@@ -1118,7 +1118,7 @@ def test_append_multiple():
 
 
 @pytest.mark.samples()
-def test_set_page_label(pdf_file_path):
+def test_set_page_label():
     src = RESOURCE_ROOT / "GeoBase_NHNC1_Data_Model_UML_EN.pdf"  # File without labels
     reader = PdfReader(src)
 
@@ -1154,8 +1154,9 @@ def test_set_page_label(pdf_file_path):
     writer.set_page_label(11, 11, "/r")
     writer.set_page_label(12, 13, "/R")
     writer.set_page_label(17, 18, "/R")
-    writer.write(pdf_file_path)
-    assert PdfReader(pdf_file_path).page_labels == expected
+    _, buf = writer.write(BytesIO())
+    buf.seek(0)
+    assert PdfReader(buf).page_labels == expected
 
     writer = PdfWriter()  # Same labels, different set order
     writer.clone_document_from_reader(reader)
@@ -1165,8 +1166,9 @@ def test_set_page_label(pdf_file_path):
     writer.set_page_label(0, 1, "/r")
     writer.set_page_label(12, 13, "/R")
     writer.set_page_label(11, 11, "/r")
-    writer.write(pdf_file_path)
-    assert PdfReader(pdf_file_path).page_labels == expected
+    _, buf = writer.write(BytesIO())
+    buf.seek(0)
+    assert PdfReader(buf).page_labels == expected
 
     # Tests labels assigned only in the middle
     # Tests label assigned to a range already containing labled ranges
@@ -1176,8 +1178,9 @@ def test_set_page_label(pdf_file_path):
     writer.set_page_label(3, 4, "/a")
     writer.set_page_label(5, 5, "/A")
     writer.set_page_label(2, 6, "/r")
-    writer.write(pdf_file_path)
-    assert PdfReader(pdf_file_path).page_labels[: len(expected)] == expected
+    _, buf = writer.write(BytesIO())
+    buf.seek(0)
+    assert PdfReader(buf).page_labels[: len(expected)] == expected
 
     # Tests labels assigned inside a previously existing range
     expected = ["1", "2", "i", "a", "b", "A", "1", "1", "2"]
@@ -1187,8 +1190,9 @@ def test_set_page_label(pdf_file_path):
     writer.set_page_label(2, 6, "/r")
     writer.set_page_label(3, 4, "/a")
     writer.set_page_label(5, 5, "/A")
-    writer.write(pdf_file_path)
-    assert PdfReader(pdf_file_path).page_labels[: len(expected)] == expected
+    _, buf = writer.write(BytesIO())
+    buf.seek(0)
+    assert PdfReader(buf).page_labels[: len(expected)] == expected
 
     # Tests invalid user input
     writer = PdfWriter()
@@ -1211,10 +1215,6 @@ def test_set_page_label(pdf_file_path):
         ValueError, match="if given, start must be equal or greater than one"
     ):
         writer.set_page_label(0, 5, "/r", start=-1)
-    import gc
-    gc.collect()
-
-    pdf_file_path.unlink()
 
     src = (
         SAMPLE_ROOT / "009-pdflatex-geotopo/GeoTopo.pdf"
@@ -1226,21 +1226,18 @@ def test_set_page_label(pdf_file_path):
     writer = PdfWriter()
     writer.clone_document_from_reader(reader)
     writer.set_page_label(2, 3, "/A")
-    writer.write(pdf_file_path)
-    assert PdfReader(pdf_file_path).page_labels[: len(expected)] == expected
+    _, buf = writer.write(BytesIO())
+    buf.seek(0)
+    assert PdfReader(buf).page_labels[: len(expected)] == expected
 
     # Tests replacing existing lables
     expected = ["A", "B", "1", "1", "2"]
     writer = PdfWriter()
     writer.clone_document_from_reader(reader)
     writer.set_page_label(0, 1, "/A")
-    writer.write(pdf_file_path)
-    assert PdfReader(pdf_file_path).page_labels[: len(expected)] == expected
-
-    import gc
-    gc.collect()
-
-    pdf_file_path.unlink()
+    _, buf = writer.write(BytesIO())
+    buf.seek(0)
+    assert PdfReader(buf).page_labels[: len(expected)] == expected
 
     # Tests prefix and start.
     src = RESOURCE_ROOT / "issue-604.pdf"  # File without page labels
@@ -1255,7 +1252,7 @@ def test_set_page_label(pdf_file_path):
     writer.set_page_label(11, 21, "/D", prefix="PAP-")
     writer.set_page_label(22, 30, "/D", prefix="FOLL-")
     writer.set_page_label(31, 39, "/D", prefix="HURT-")
-    writer.write(pdf_file_path)
+    writer.write(BytesIO())
 
 
 @pytest.mark.enable_socket()
