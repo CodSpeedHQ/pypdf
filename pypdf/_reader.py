@@ -35,6 +35,7 @@ import zlib
 from datetime import datetime
 from io import BytesIO, FileIO, UnsupportedOperation
 from pathlib import Path
+from types import TracebackType
 from typing import (
     Any,
     Callable,
@@ -45,6 +46,7 @@ from typing import (
     Mapping,
     Optional,
     Tuple,
+    Type,
     Union,
     cast,
 )
@@ -312,8 +314,10 @@ class PdfReader:
                 __name__,
             )
 
+        self._we_opened = False
         if isinstance(stream, (str, Path)):
             stream = FileIO(stream, "rb")
+            self._we_opened = True
             weakref.finalize(self, stream.close)
 
         self.read(stream)
@@ -348,6 +352,20 @@ class PdfReader:
     def close(self) -> None:
         """Close the underlying file handle"""
         self.stream.close()
+
+    def __enter__(self) -> "PdfReader":
+        """Use PdfReader as context manager"""
+        return self
+
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        """Write data to the fileobj."""
+        if self._we_opened:
+            self.close()
 
     @property
     def root_object(self) -> DictionaryObject:
