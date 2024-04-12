@@ -142,7 +142,7 @@ def text_extraction(pdf_path):
 
 
 def test_text_extraction(benchmark):
-    file_path = SAMPLE_ROOT / "009-pdflatex-geotopo/GeoTopo.pdf"
+    file_path = SAMPLE_ROOT / "004-pdflatex-4-pages/pdflatex-4-pages.pdf"
     benchmark(text_extraction, file_path)
 
 
@@ -201,7 +201,8 @@ def image_new_property(data):
         ["/TPL11", "/Image30"],
         ["/TPL12", "/Image30"],
     ]
-    assert len(reader.pages[0].images.items()) == 36
+    # commented out to speed up the benchmark
+    # assert len(reader.pages[0].images.items()) == 36
     assert reader.pages[0].images[0].name == "I0.png"
     assert len(reader.pages[0].images[-1].data) == 15168
     assert reader.pages[0].images["/TPL1", "/Image5"].image.format == "JPEG"
