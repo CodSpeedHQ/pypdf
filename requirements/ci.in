@@ -5,6 +5,7 @@ pillow
 pycryptodome
 pytest
 pytest-benchmark
+pytest-codspeed
 pytest-socket
 pytest-timeout
 pytest-xdist
