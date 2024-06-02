@@ -291,7 +291,7 @@ class AnnotationBuilder:
             rect: array of four integers ``[xLL, yLL, xUR, yUR]``
                 specifying the clickable rectangular area
             interiour_color: None or hex-string for the color, e.g. cdcdcd
-                If None is used, the interiour is transparent.
+                If None is used, the interior is transparent.
 
         Returns:
             A dictionary object representing the annotation.
@@ -349,7 +349,7 @@ class AnnotationBuilder:
             rect: array of four integers ``[xLL, yLL, xUR, yUR]`` specifying
                 the bounding box of the ellipse
             interiour_color: None or hex-string for the color, e.g. cdcdcd
-                If None is used, the interiour is transparent.
+                If None is used, the interior is transparent.
 
         Returns:
             A dictionary object representing the annotation.
