@@ -823,6 +823,19 @@ class PdfWriter(PdfDocCommon):
                 ),
             ).get_object(),
         )
+
+        if "/Font" not in dr or not isinstance(dr["/Font"], DictionaryObject):
+            dr[NameObject("/Font")] = DictionaryObject()
+            font_dict = dr["/Font"]
+            font_entry = DictionaryObject({
+                NameObject("/Type"): NameObject("/Font"),
+                NameObject("/Subtype"): NameObject("/TrueType"),
+                NameObject("/BaseFont"): NameObject("/Helvetica"),
+                NameObject("/Encoding"): NameObject("/WinAnsiEncoding")
+            })
+            font_to_add = NameObject("/Helvetica")
+            font_dict[font_to_add] = font_entry
+
         dr = dr.get("/Font", DictionaryObject()).get_object()
         if font_name not in dr:
             # ...or AcroForm dictionary
